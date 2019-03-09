@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Image Filter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/js/uikit-icons.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.3/css/uikit.min.css" />
+    <style>
+        body {
+            margin: 1rem;
+        }
+
+        canvas {
+            display: block;
+            margin: auto;
+            border: 2px dashed #666;
+            border-radius: 0.4rem;
+        }
+
+        .canvas-container {
+            display: block;
+            width: auto;
+            height: auto;
+            position: relative;
+            margin: auto;
+        }
+
+        .canvas-loading-overlay {
+            position: absolute;
+            left: 0%;
+            top: 0%;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            background: rgba(255, 255, 255, 0.5);
+            transition: opacity 0.2s ease-out;
+        }
+        .canvas-loading-overlay.loading {
+            opacity: 1;
+        }
+
+        .canvas-loading {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            color: black;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="js-upload uk-placeholder uk-text-center">
+        <span uk-icon="icon: cloud-upload"></span>
+        <span class="uk-text-middle"></span>
+        <div uk-form-custom>
+            <input type="file" multiple>
+            <span class="uk-link">clique para subir a imagem</span>
+        </div>
+    </div>    
+    
+    <div class="canvas-container">
+        <div class="canvas-loading-overlay">
+            <div class="canvas-loading" uk-spinner="ratio: 2"></div>
+        </div>
+        <canvas width="500" height="4"></canvas>
+    </div>
+
+    <br />
+    
+    <button id="blur-btn" class="uk-button uk-button-secondary">BLUR</button>
+    <button id="flatten-btn" class="uk-button uk-button-secondary">FLATTEN</button>
+    <button id="edge-btn" class="uk-button uk-button-secondary">EDGE</button>
+    <button id="embossing-btn" class="uk-button uk-button-secondary">EMBOSSING</button>
+    
+    <script src="index.js"></script>
+    <script>
+        function getScriptBlob(script, callback, prepend='') {
+            const xml = new XMLHttpRequest();
+            xml.onload = () => {
+                if (xml.status === 200) {
+                    callback && callback(
+                        URL.createObjectURL(
+                            new Blob([prepend + xml.responseText], { type: 'application/javascript' })
+                        )
+                    );
+                }
+            }
+            xml.open('GET', script);
+            xml.send();
+        }
+        
+        const head = document.querySelector('head');
+        getScriptBlob('/util.js', utilScriptBlob => {
+            const utilScript = document.createElement('script');
+            utilScript.src = utilScriptBlob;
+            head.appendChild(utilScript);
+
+            getScriptBlob('/worker.js', window.loadFilterScript, `self.importScripts('${utilScriptBlob}');`);
+        })
+    </script>
+</body>
+</html>
