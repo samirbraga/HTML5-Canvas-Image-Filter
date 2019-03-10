@@ -21,8 +21,12 @@ window.loadFilterScript = function (workerBlob) {
         }
     
         draw() {
-            this.canvas.width = this.image.width;
-            this.canvas.height = this.image.height;
+            const maxSize = 1300;
+            const size = Math.max(this.image.width, this.image.height);
+            const resizeFactor = maxSize / size;
+            
+            this.canvas.width = parseInt(resizeFactor * this.image.width);
+            this.canvas.height = parseInt(resizeFactor * this.image.height);
             this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             this.ctx.drawImage(this.image, 0, 0);
             this.imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
