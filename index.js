@@ -21,7 +21,7 @@ window.loadFilterScript = function (workerBlob) {
         }
     
         draw() {
-            const maxSize = 1300;
+            const maxSize = 1000;
             const size = Math.max(this.image.width, this.image.height);
             const resizeFactor = maxSize / size < 1 ? maxSize / size : 1;
             const imgWidth = parseInt(resizeFactor * this.image.width);
