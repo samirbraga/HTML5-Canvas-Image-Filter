@@ -122,6 +122,8 @@ window.loadFilterScript = function (workerBlob) {
             flattenBtn.addEventListener("click", () => filter.flatten(startFilterLoading, endFilterLoading));
             edgeBtn.addEventListener("click", () => filter.edge(startFilterLoading, endFilterLoading));
             embossingBtn.addEventListener("click", () => filter.embossing(startFilterLoading, endFilterLoading));
+            
+            inputFile.value = '';
         }
     });
 }
