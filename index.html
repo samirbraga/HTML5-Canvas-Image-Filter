@@ -76,7 +76,6 @@
     <button id="edge-btn" class="uk-button uk-button-secondary">EDGE</button>
     <button id="embossing-btn" class="uk-button uk-button-secondary">EMBOSSING</button>
     
-    <script src="index.js"></script>
     <script>
         function getScriptBlob(script, callback, prepend='') {
             const xml = new XMLHttpRequest();
@@ -92,15 +91,23 @@
             xml.open('GET', script);
             xml.send();
         }
-        
-        const head = document.querySelector('head');
-        getScriptBlob('/util.js', utilScriptBlob => {
-            const utilScript = document.createElement('script');
-            utilScript.src = utilScriptBlob;
-            head.appendChild(utilScript);
 
-            getScriptBlob('/worker.js', window.loadFilterScript, `self.importScripts('${utilScriptBlob}');`);
-        })
+        const head = document.querySelector('head');
+        function addScript(scriptBlob) {
+            const scriptElement = document.createElement('script');
+            scriptElement.src = scriptBlob;
+            head.appendChild(scriptElement);
+        }
+    
+        getScriptBlob(window.location.pathname + 'index.js', indexScriptBlob => {
+            addScript(indexScriptBlob);
+
+            getScriptBlob(window.location.pathname + 'util.js', utilScriptBlob => {
+                addScript(utilScriptBlob);
+
+                getScriptBlob(window.location.pathname + 'worker.js', window.loadFilterScript, `self.importScripts('${utilScriptBlob}');`);
+            });
+        });
     </script>
 </body>
 </html>
